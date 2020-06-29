@@ -11,28 +11,33 @@ Vue.use(VueRouter)
   const routes = [
   {
     path: '/',
-    name: '首页',
-    component: Home
+    name: 'Home',
+    component: Home,
+    title: '首页'
   },
   {
     path: '/market',
-    name: '市场',
-    component: Market
+    name: 'Market',
+    component: Market,
+    title: '市场'
   },
   {
     path: '/arbitration',
-    name: '仲裁',
-    component: Arbitration
+    name: 'Arbitration',
+    component: Arbitration,
+    title: '仲裁'
   },
   {
     path: '/user',
-    name: '个人中心',
-    component: User
+    name: 'User',
+    component: User,
+    title: '个人中心'
   },
   {
     path: '/login',
-    name: '登录/注册',
-    component: Login
+    name: 'Login/Register',
+    component: Login,
+    title: '登录/注册'
   }
 ]
 
