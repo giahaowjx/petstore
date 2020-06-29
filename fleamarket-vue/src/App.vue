@@ -9,8 +9,8 @@
             <el-col :span="5">
               <el-menu :default-active="activeIndex"  mode="horizontal" router>
                   <el-menu-item v-for="(item, index) in $router.options.routes" v-if="index != hideIndex" :index="item.path"
-                                :class="$route.path === item.path? 'is-active' : ''">
-                      {{item.name}}</el-menu-item>
+                                :class="$route.path === item.path? 'is-active' : ''" :key="index">
+                      {{item.title}}</el-menu-item>
               </el-menu>
             </el-col>
           </el-row>
