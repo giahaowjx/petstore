@@ -96,7 +96,18 @@
         data() {
             return {
                 input: "",
-                commodityList: null,
+                commodityList: [
+                    {
+                        owner: "YUXIN",
+                        name: "COM_E",
+                        image: require('../assets/fleamarket-1.png'),
+                        desc: "A good Commodity",
+                        price: 30,
+                        state: 1,
+                        id: 3,
+                        type: 1
+                    }
+                ],
                 commodityClass: Common.commodityClass,
                 // 1 表示价格由低到高
                 priceOrder: '1',

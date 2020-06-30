@@ -38,10 +38,14 @@
                         _this.userInfo = response.data.user;
                     } else {
                         _this.$message.error('获取用户信息失败！')
+                        _this.$cookies.remove('account');
+                        _this.$cookies.remove('password');
                     }
                     _this.loading = false;
                 }).catch(function (error) {
                     _this.loading = false;
+                    _this.$cookies.remove('account');
+                    _this.$cookies.remove('password');
                 })
             } else {
                 _this.$message.error('账号错误！')
