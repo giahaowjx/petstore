@@ -1,6 +1,6 @@
 <template>
   <div style="text-align: center; margin-top: 30px">
-    <el-image class="avator" :src="require('../assets/webank_logo.jpg')"/>
+    <el-image class="avator" :src="require('../assets/fleamarket-1.png')"/>
     <el-row type="flex" justify="center" :gutter="20" style="margin-top: 50px">
       <el-col :span="8">
         <el-input class="search-input" v-model.trim="input" placeholder="请输入内容"></el-input>
@@ -62,7 +62,7 @@ export default {
   }
   .avator {
     height: 200px;
-    width: 300px;
+    width: 260px;
   }
   .class-box {
     margin-top: 20px;

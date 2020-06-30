@@ -8,8 +8,8 @@
             </el-col>
             <el-col :span="5">
               <el-menu :default-active="activeIndex"  mode="horizontal" router>
-                  <el-menu-item v-for="(item, index) in $router.options.routes" v-if="index != hideIndex" :index="item.path"
-                                :class="$route.path === item.path? 'is-active' : ''" :key="index">
+                  <el-menu-item v-for="(item, index) in $router.options.routes" v-if="index != hideIndex && index !== 5"
+                                :index="item.path" :class="$route.path === item.path? 'is-active' : ''" :key="index">
                       {{item.title}}</el-menu-item>
               </el-menu>
             </el-col>
@@ -41,19 +41,15 @@
 <script>
   export default {
     data() {
-      const item = {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-      };
       return {
-        tableData: Array(20).fill(item),
         activeIndex: '/',
-        hideIndex: 4
+        hideIndex: 3
       }
     },
-    methods: {
-
+    created() {
+        if (this.$cookies.get('account')) {
+            this.hideIndex = 4;
+        }
     }
   };
 </script>
