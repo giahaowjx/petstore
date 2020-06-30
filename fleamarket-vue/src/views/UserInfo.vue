@@ -45,6 +45,8 @@
                 })
             } else {
                 _this.$message.error('账号错误！')
+                this.$cookies.remove('account');
+                this.$cookies.remove('password');
                 window.reload()
             }
         },

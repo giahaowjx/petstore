@@ -28,15 +28,6 @@
     export default {
         name: "User",
         methods: {
-            onMenuChange(index) {
-                if (index === '1') {
-                    this.$router.push('/user/info')
-                } else if (index === '2') {
-                    this.$router.push('/user/commodity')
-                } else {
-
-                }
-            },
             logout() {
                 this.$confirm('是否退出当前账户?', '提示', {
                     confirmButtonText: '确定',
