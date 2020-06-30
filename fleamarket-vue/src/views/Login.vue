@@ -117,8 +117,8 @@
                         } else if(response.data.code === -1) {
                             _this.$message.error('用户不存在！');
                             _this.loading = false;
-                        } else {
-                            _this.$message.error('未知错误！');
+                        } else if (response.data.code == -2) {
+                            _this.$message.error('密码错误！');
                             _this.loading = false;
                         }
                     }).catch(function (error) {
