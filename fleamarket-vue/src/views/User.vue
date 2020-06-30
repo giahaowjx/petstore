@@ -33,8 +33,6 @@
                     this.$router.push('/user/info')
                 } else if (index === '2') {
                     this.$router.push('/user/commodity')
-                } else {
-
                 }
             },
             logout() {

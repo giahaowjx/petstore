@@ -144,7 +144,11 @@
                 this.getTransactionList(this.url[this.currentURLIndex], index - 1);
             },
             selectNav(index) {
-                this.getTransactionList(index, 0);
+                if (index === '1') {
+                    this.getTransactionList('/user/transaction/buy/', 0);
+                } else {
+                    this.getTransactionList('/user/transaction/sell/', 0);
+                }
             },
             getTransactionList(url, pageNo) {
                 let account = this.$cookies.get('account');

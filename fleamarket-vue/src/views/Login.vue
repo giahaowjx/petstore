@@ -115,7 +115,7 @@
                             _this.$router.push({name: 'Home'});
                             window.location.reload()
                         } else if(response.data.code === -1) {
-                            _this.$message.error('用户已存在！');
+                            _this.$message.error('用户不存在！');
                             _this.loading = false;
                         } else {
                             _this.$message.error('未知错误！');
