@@ -18,20 +18,20 @@
             </el-main>
 
             <el-dialog title="注册" :visible.sync="registerVisible" v-loading="loadingRegister" width="50%">
-                <el-form :model="userForm">
-                    <el-form-item label="账户ID" :label-width="formLabelWidth">
+                <el-form :model="userForm" :rules="rules" ref="userForm">
+                    <el-form-item label="账户ID" :label-width="formLabelWidth" prop="account">
                         <el-input v-model="userForm.account" autocomplete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="账户密码" :label-width="formLabelWidth">
+                    <el-form-item label="账户密码" :label-width="formLabelWidth" prop="password">
                         <el-input v-model="userForm.password" autocomplete="off" show-password></el-input>
                     </el-form-item>
-                    <el-form-item label="密码确认" :label-width="formLabelWidth" >
+                    <el-form-item label="密码确认" :label-width="formLabelWidth" prop="password2">
                         <el-input v-model="userForm.password2" autocomplete="off" show-password></el-input>
                     </el-form-item>
-                    <el-form-item label="账户余额" :label-width="formLabelWidth">
+                    <el-form-item label="账户余额" :label-width="formLabelWidth" prop="balance">
                         <el-input v-model="userForm.balance" autocomplete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="账户信息" :label-width="formLabelWidth">
+                    <el-form-item label="账户信息" :label-width="formLabelWidth" prop="info">
                         <el-input v-model="userForm.info" autocomplete="off"></el-input>
                     </el-form-item>
                 </el-form>
@@ -48,6 +48,25 @@
     export default {
         name: 'Login',
         data() {
+            var validatePass = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入密码'));
+                } else {
+                    if (this.userForm.password !== '') {
+                        this.$refs.userForm.validateField('password2');
+                    }
+                    callback();
+                }
+            };
+            var validatePass2 = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.userForm.password) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            };
             return {
                 loginForm: {
                     account: '',
@@ -63,14 +82,31 @@
                     info: ''
                 },
                 formLabelWidth: '120px',
-                loading: false
+                loading: false,
+                rules: {
+                    account: [
+                        { required: true, message: '请输入账户ID', trigger: 'blur' }
+                    ],
+                    password: [
+                        { validator: validatePass, trigger: 'blur' }
+                    ],
+                    password2: [
+                        { validator: validatePass2, trigger: 'blur' }
+                    ],
+                    balance: [
+                        { required: true, message: '请输入账户余额', trigger: 'blur' },
+                    ],
+                    info: [
+                        { required: true, message: '请输入账户信息', trigger: 'blur' }
+                    ]
+                }
             }
         },
         methods: {
             register() {
                 if (this.password !== this.password2) {
                     this.$message.error('两次密码不同！')
-                } else {
+                } else if (this.password === this.password2) {
                     const _this = this;
                     let form = new FormData();
                     form.append('user_id', this.userForm.account);
