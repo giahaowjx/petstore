@@ -16,7 +16,7 @@
                 </div>
                 <div style="margin-top: 30px">
                     <span class="info-title">账户状态 :  </span>
-                    <span>{{userState[userInfo.state]}}</span>
+                    <span>{{userState[userInfo.state + 1]}}</span>
                 </div>
             </el-main>
         </el-container>

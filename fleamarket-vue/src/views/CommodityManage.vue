@@ -53,7 +53,7 @@
                             <el-select v-model="currentCommodity.type" placeholder="请选择商品类型">
                                 <el-option v-for="(item, index) in commodityClass" :label="item.name" :value="index + 1"
                                            :key="index + 1"></el-option>
-                                <el-option label="其他" value="-1"></el-option>
+                                <el-option label="其他" :value="-1"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-form>
