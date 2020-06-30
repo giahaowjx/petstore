@@ -9,7 +9,7 @@ module.exports = {
         hotOnly: false,
         proxy: {
             '/api': {
-                target: 'http://market.yuxinzhao.top:9000/',
+                target: 'http://market.yuxinzhao.top:9000',
                 ws: true,
                 changeOrigin: true,
                 pathRewrite: {

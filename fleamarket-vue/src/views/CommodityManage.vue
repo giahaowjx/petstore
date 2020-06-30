@@ -16,8 +16,8 @@
                     <el-table-column prop="price" label="商品价格"/>
                     <el-table-column prop="type" label="商品类型">
                         <template slot-scope="typescope">
-                            <el-image v-if="typescope.row.type !== -1" class="class-icon" :src="commodityClass[typescope.row.type].url"/>
-                            <span v-if="typescope.row.type !== -1" style="margin-left: 10px">{{commodityClass[typescope.row.type].name}}</span>
+                            <el-image v-if="typescope.row.type !== -1" class="class-icon" :src="commodityClass[typescope.row.type - 1].url"/>
+                            <span v-if="typescope.row.type !== -1" style="margin-left: 10px">{{commodityClass[typescope.row.type - 1].name}}</span>
                             <span v-if="typescope.row.type === -1" style="margin-left: 10px">未定</span>
                         </template>
                     </el-table-column>
@@ -66,7 +66,7 @@
                 <el-dialog title="新增商品" :visible.sync="commodityAddVisible" v-loading="loadingAddDialog">
                     <el-form :model="currentCommodity">
                         <el-form-item label="商品名称" :label-width="formLabelWidth">
-                            <el-input v-model="currentCommodity.price" autocomplete="off"></el-input>
+                            <el-input v-model="currentCommodity.name" autocomplete="off"></el-input>
                         </el-form-item>
                         <el-form-item label="商品描述" :label-width="formLabelWidth">
                             <el-input v-model="currentCommodity.desc" autocomplete="off"></el-input>
@@ -196,6 +196,7 @@
                                 if (response.data.code === 0) {
                                     _this.$message({showClose: true, message: '下架成功'
                                         , type: 'success'});
+                                    _this.getCommodity()
                                 }
                             })
                         }).catch(() => {
@@ -245,7 +246,7 @@
                         _this.$message({showClose: true, message: '上架成功'
                             , type: 'success'});
                         _this.commodityUpVisible = false;
-                        window.location.reload();
+                        _this.getCommodity()
                     } else {
                         _this.$message.error('上架失败！');
                         _this.commodityUpVisible = false;
@@ -288,19 +289,23 @@
                 form.append('commodity_name', this.currentCommodity.name);
                 form.append('commodity_desc', this.currentCommodity.desc);
                 form.append('commodity_image', this.currentCommodity.image);
-                console.log(this.currentCommodity.image)
+
+                this.loadingAddDialog = true;
                 axios.post('/commodity/create/', form).then(function (response) {
                     if (response.data.code === 0) {
                         _this.$message({showClose: true, message: '新增商品成功'
                             , type: 'success'});
                         _this.commodityAddVisible = false;
+                        _this.getCommodity()
                     } else {
                         _this.$message.error('创建失败！')
                         _this.commodityAddVisible = false;
                     }
+                    _this.loadingAddDialog = false;
                 }).catch(function (error) {
                     _this.$message.error('创建失败！')
                     _this.commodityAddVisible = false;
+                    _this.loadingAddDialog = false;
                 })
             }
         },
