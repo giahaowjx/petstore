@@ -77,6 +77,7 @@
                     form.append('user_password', this.userForm.password);
                     form.append('balance', this.userForm.balance);
                     form.append('info', this.userForm.info);
+                    this.loadingRegister = true;
 
                     axios.post('/user/create/', form).then(function (response) {
                         if (response.data.code === 0) {
@@ -89,6 +90,10 @@
                         } else {
                             _this.$message.error('未知错误');
                         }
+                        _this.loadingRegister = false;
+                    }).catch(function (error) {
+                        _this.$message.error('未知错误');
+                        _this.loadingRegister = false;
                     })
                 }
             },
