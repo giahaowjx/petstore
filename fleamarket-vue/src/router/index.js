@@ -5,6 +5,9 @@ import Market from "../views/Market";
 import Arbitration from "../views/Arbitration";
 import User from "../views/User";
 import Login from "../views/Login";
+import UserInfo from "../views/UserInfo";
+import CommodityManage from "../views/CommodityManage";
+import ArbitrationAdmin from "../views/ArbitrationAdmin";
 
 Vue.use(VueRouter)
 
@@ -31,13 +34,30 @@ Vue.use(VueRouter)
     path: '/user',
     name: 'User',
     component: User,
-    title: '个人中心'
+    title: '个人中心',
+    children: [
+      {
+        path: '/user/info',
+        name: 'UserInfo',
+        component: UserInfo
+      },
+      {
+        path: '/user/commodity',
+        name: 'UserCommodityManagement',
+        component: CommodityManage
+      }
+    ]
   },
   {
     path: '/login',
     name: 'Login/Register',
     component: Login,
     title: '登录/注册'
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: ArbitrationAdmin
   }
 ]
 

@@ -31,12 +31,13 @@
 <!--                        </el-tab-pane>-->
                     </el-tabs>
                 </el-header>
-                <el-main style="text-align: left; margin-top: 20px">
-                    <el-row style="margin-bottom: 20px" :gutter="20">
-                        <el-col :span="4" v-for="commodity in commodityList" :key="commodity.id">
+                <el-main style="text-align: left; margin-top: 30px">
+                    <el-row style="margin-bottom: 20px" :gutter="20"  v-loading="loading">
+                        <el-col :span="4" v-for="(commodity, index) in commodityList" :key="commodity.id">
                             <div style="margin-top: 10px">
-                                <el-card style="padding: 0" shadow="hover" body-style="cursor: pointer">
-                                    <el-image :src="commodity.image"/>
+                                <el-card style="padding: 0" shadow="hover" body-style="cursor: pointer"
+                                    @click.native="getCommodityInfo(index)">
+                                    <el-image class="commodity-image" :fit="contain" :src="'http://market.yuxinzhao.top:9000' + commodity.image"/>
                                     <div class="price-number">
                                         <span>¥{{commodity.price}}</span>
                                     </div>
@@ -61,10 +62,29 @@
             </el-container>
         </el-container>
         <!-- 显示商品具体信息及购买的对话框 -->
-        <el-dialog title="商品信息" :visible.sync="commodityInfoVisible">
-            <el-form :model="form">
-                <el-row type="flex" justify=""
-            </el-form>
+        <el-dialog title="商品信息" :visible.sync="commodityInfoVisible" width="40%" v-loading="loadingBuy">
+            <el-row type="flex" justify="space-between">
+                <el-col :span="11">
+                    <el-image class="commodity-info-image" :src="'http://market.yuxinzhao.top:9000' + commodityChosen.image"/>
+                </el-col>
+                <el-col :span="11">
+                    <div class="commodity-info-name">
+                        <span>{{commodityChosen.name}}</span>
+                    </div>
+                    <div class="commodity-info-price">
+                        <span>¥{{commodityChosen.price}}</span>
+                    </div>
+                    <div style="margin-top: 10px">
+                        <span style="font-size: 12px; color: #909399">卖家: </span>
+                        <span style="font-size: 14px; color: black">{{commodityChosen.owner}}</span>
+                    </div>
+                    <div style="margin-top: 10px">
+                        <span style="font-size: 12px; color: #909399">商品描述: </span>
+                        <span>{{commodityChosen.desc}}</span>
+                    </div>
+                    <el-button type="primary" style="width: 120px; margin-top: 50px" @click="buy(commodityChosen.id)">购买</el-button>
+                </el-col>
+            </el-row>
         </el-dialog>
     </div>
 </template>
@@ -86,28 +106,31 @@
                 commodityTotalNum: 0,
                 commodityPageNum: 50,
                 activeTab: 'default',
-                commodityInfoVisible: false
+                commodityInfoVisible: false,
+                commodityChosen: '',
+                loading: false,
+                loadingBuy: false
             }
         },
         methods: {
-            handleClick(tab, event) {
-                console.log(tab);
-            },
             onFilterByClass(index) {
                 this.classIndex = index;
+                this.getCommodityList(0);
             },
             onSearch() {
-                this.getCommodityList(1);
+                this.getCommodityList(0);
             },
             page(currentPage) {
-                this.getCommodityList(currentPage);
+                this.getCommodityList(currentPage - 1);
             },
             onChangeTab() {
-                this.getCommodityList(1);
+                this.getCommodityList(0);
             },
             getCommodityList(pageId) {
+                const _this = this;
                 let url = '';
                 let form = new FormData();
+                form.append('commodity_type', this.classIndex + 1);
                 if (this.input !== '') {
                     // 进行商品搜索
                     url = '/commodity/search/';
@@ -120,27 +143,84 @@
                     url += 'price/';
                     form.append('reverse', this.priceOrder);
                 }
-                if (this.classIndex !== '') {
-                    form.append('commodity_type', this.classIndex);
-                }
                 form.append('page_max_items', this.commodityPageNum);
                 form.append('page_id', pageId + '');
                 // 发起请求
+                this.loading = true;
                 axios.post(url, form).then(function (response) {
                     _this.commodityList = response.data.commodity_list;
                     _this.commodityTotalNum = response.data.page_num * _this.commodityPageNum;
+                    _this.loading = false;
+                }).catch(function (error) {
+                    _this.$message.error(error);
+                    _this.loading = false;
                 })
+            },
+            getCommodityInfo(id) {
+                this.commodityChosen = this.commodityList[id];
+                this.commodityInfoVisible = true;
+            },
+            buy(id) {
+                let user_id = this.$cookies.get('account');
+                if (user_id) {
+                    const _this = this;
+                    // 存在账户
+                    this.$prompt('请输入备注', '备注', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                    }).then(({value}) => {
+                        let form = new FormData();
+                        form.append('user_id', user_id);
+                        form.append('commodity_id', id);
+                        form.append('transaction_desc', value);
+                        this.loadingBuy = true;
+                        axios.post('/commodity/buy/', form).then(function (response) {
+                            if (response.data.code === 0) {
+                                _this.$message({showClose: true, message: '购买成功'
+                                    , type: 'success'});
+                                _this.loadingBuy = false;
+                            } else {
+                                _this.error(response.data.code);
+                                _this.loadingBuy = false;
+                            }
+                        })
+                    })
+                } else {
+                    // 不存在显示对话框提示登录
+                    this.$message.error('请先登录！')
+                }
+            },
+            error(code) {
+                if (code === -1) {
+                    this.$message.error('用户状态错误');
+                } else if (code === -2) {
+                    this.$message.error('商品状态错误');
+                } else if (code === -3) {
+                    this.$message.error('余额不足');
+                } else if (code === -4) {
+                    this.$message.error('商品状态变更失败');
+                } else if (code === -5) {
+                    this.$message.error('交易无法成交');
+                } else {
+                    this.$message.error('位置错误');
+                }
             }
         },
         created() {
             const _this = this;
-            this.classIndex = this.$route.params.classIndex + 1
+            this.classIndex = this.$route.params.classIndex;
+            this.loading = true;
             if (this.classIndex) {
-                axios.post('commodity/market/', {commodity_type: this.classIndex})
+                let form = new FormData();
+                form.append('commodity_type', this.classIndex);
+                axios.post('commodity/market/', form)
                     .then(function (response) {
                         _this.commodityList = response.data.commodity_list;
-                        // console.log(response.data.commodity_list)
                         _this.commodityTotalNum = response.data.page_num * _this.commodityPageNum;
+                        _this.commodityChosen = _this.commodityList[0];
+                        _this.loading = false;
+                }).catch(function (err) {
+                    _this.loading = false;
                 })
             } else {
                 axios.post('commodity/market/')
@@ -148,7 +228,11 @@
                         _this.commodityList = response.data.commodity_list;
                         // console.log(response.data.commodity_list)
                         _this.commodityTotalNum = response.data.page_num * _this.commodityPageNum;
-                    })
+                        _this.commodityChosen = _this.commodityList[0];
+                        _this.loading = false;
+                    }).catch(function (error) {
+                        _this.loading = false;
+                })
             }
         }
     }
@@ -164,7 +248,7 @@
         margin-left: 10px;
     }
     .commodity-image {
-
+        height: 180px;
     }
     .price-number {
         color: #ff441a;
@@ -189,5 +273,20 @@
     .class-icon {
         width: 30px;
         height: 30px;
+    }
+    .commodity-info-image {
+        width: 250px;
+        height: 250px;
+    }
+    .commodity-info-name {
+        font-size: 16px;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+    .commodity-info-price {
+        font-size: 20px;
+        color: #ff441a;
+        font-weight: 700;
+        margin-top: 10px;
     }
 </style>
