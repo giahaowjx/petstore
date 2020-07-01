@@ -1,0 +1,6 @@
+[submodule "fisco-bcos-market-backend"]
+	path = fisco-bcos-market-backend
+	url = https://github.com/YuxinZhaozyx/fisco-bcos-market-backend.git
+[submodule "contracts"]
+	path = contracts
+	url = https://github.com/wrongnames/2020-.git
