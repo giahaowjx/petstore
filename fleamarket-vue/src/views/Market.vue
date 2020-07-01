@@ -22,8 +22,10 @@
                             <span style="font-size: 14px; margin-left: 15px; ">欢迎来到跳蚤市场！</span>
                         </el-tab-pane>
                         <el-tab-pane label="按价格排序" name="price">
-                            <el-radio v-model="priceOrder" label="1">由低到高</el-radio>
-                            <el-radio v-model="priceOrder" label="2">由高到低</el-radio>
+                            <el-radio-group v-model="priceOrder" @change="onClickRadio">
+                                <el-radio label="1">由低到高</el-radio>
+                                <el-radio label="2">由高到低</el-radio>
+                            </el-radio-group>
                         </el-tab-pane>
 <!--                        <el-tab-pane label="按时间排序">-->
 <!--                            <el-radio v-model="timeOrder" label="1">显示最新</el-radio>-->
@@ -37,7 +39,7 @@
                             <div style="margin-top: 10px">
                                 <el-card style="padding: 0" shadow="hover" body-style="cursor: pointer"
                                     @click.native="getCommodityInfo(index)">
-                                    <el-image class="commodity-image" :fit="contain" :src="'http://market.yuxinzhao.top:9000' + commodity.image"/>
+                                    <el-image class="commodity-image" :src="'http://market.yuxinzhao.top:9000' + commodity.image"/>
                                     <div class="price-number">
                                         <span>¥{{commodity.price}}</span>
                                     </div>
@@ -134,14 +136,21 @@
             page(currentPage) {
                 this.getCommodityList(currentPage - 1);
             },
-            onChangeTab() {
+            onChangeTab(tab) {
+                this.activeTab = tab.name;
+                this.getCommodityList(0);
+            },
+            onClickRadio(radio) {
+                this.priceOrder = radio;
                 this.getCommodityList(0);
             },
             getCommodityList(pageId) {
                 const _this = this;
                 let url = '';
                 let form = new FormData();
-                form.append('commodity_type', this.classIndex + 1);
+                if (this.classIndex) {
+                    form.append('commodity_type', this.classIndex + 1);
+                }
                 if (this.input !== '') {
                     // 进行商品搜索
                     url = '/commodity/search/';
@@ -152,7 +161,7 @@
                 }
                 if (this.activeTab === 'price') {
                     url += 'price/';
-                    form.append('reverse', this.priceOrder);
+                    form.append('reverse', this.priceOrder - 1 + '');
                 }
                 form.append('page_max_items', this.commodityPageNum);
                 form.append('page_id', pageId + '');
@@ -272,7 +281,7 @@
         color: black;
         text-align: left;
         padding-top: 5px;
-        font-size: 14px;
+        font-size: 13px;
     }
     .commodity-owner {
         color: #909399;
