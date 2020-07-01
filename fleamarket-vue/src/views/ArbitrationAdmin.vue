@@ -2,7 +2,7 @@
     <div>
         <el-container style="margin-top: 20px;padding: 0">
             <el-aside width="200px">
-                <el-menu style="height: 100%" @select="selectNav" default-active="1">
+                <el-menu style="height: 100%" default-active="1">
                     <el-menu-item index="1">
                         <i class="el-icon-s-finance"/>
                         <span>待仲裁记录</span>
@@ -17,20 +17,16 @@
                     <el-col :span="22">
                         <el-table v-loading="loading" :data="transactionInfo" stripe border
                                   style="width: 100%; margin-top: 20px">
-                            <el-table-column prop="id" label="交易ID" width="120">
+                            <el-table-column prop="id" label="交易ID" width="80">
                             </el-table-column>
-                            <el-table-column prop="commodity_id" label="商品ID" width="120">
+                            <el-table-column prop="commodity_id" label="商品ID" width="80">
                             </el-table-column>
                             <el-table-column prop="user_id_sell" label="卖方用户">
                             </el-table-column>
                             <el-table-column prop="user_id_buy" label="买方用户"/>
                             <el-table-column prop="desc" label="交易描述"/>
-                            <el-table-column prop="price" label="价格"/>
-                            <el-table-column prop="state" label="交易状态">
-                                <template slot-scope="scope">
-                                    <el-tag :type="tabType[scope.row.state + 2]" disable-transitions>{{tabText[scope.row.state + 2]}}</el-tag>
-                                </template>
-                            </el-table-column>
+                            <el-table-column prop="price" label="价格" width="120"/>
+                            <el-table-column prop="reason" label="仲裁理由"/>
                             <el-table-column align="center" label="操作">
                                 <template slot-scope="scope">
                                     <el-button type="primary" plain size="small"
@@ -65,7 +61,8 @@
                         user_id_buy: '',
                         desc: '',
                         price: '',
-                        state: ''
+                        state: '',
+                        reason: ''
                     }
                 ],
                 title: '处理仲裁申请',
@@ -86,7 +83,13 @@
             this.loading = true;
 
             axios.post('/arbitration/list/', form).then(function (response) {
-                _this.transactionInfo = response.data.transaction_list;
+                let transactionList = response.data.transaction_list;
+                var index;
+                for (index in transactionList) {
+                    transactionList[index].reason = '无理由';
+                }
+                _this.transactionInfo = transactionList;
+                _this.getReason();
                 _this.loading = false;
             })
         },
@@ -103,8 +106,14 @@
                 this.loading = true;
 
                 axios.post('/arbitration/list/', form).then(function (response) {
-                    _this.transactionInfo = response.data.transaction_list;
+                    let transactionList = response.data.transaction_list;
+                    var index;
+                    for (index in transactionList) {
+                        transactionList[index].reason = '...';
+                    }
+                    _this.transactionInfo = transactionList;
                     _this.loading = false;
+                    _this.getReason();
                 }).catch(function (error) {
                     this.$message.error(error)
                     _this.loading = false;
@@ -129,6 +138,26 @@
                     }
                     _this.loading = false;
                 })
+            },
+            getReason() {
+                var item;
+                const _this = this;
+
+                for (item in this.transactionInfo) {
+                    let form = new FormData();
+                    form.append('transaction_id', this.transactionInfo[item].id);
+                    this.loading = true;
+
+                    axios.post('/arbitration/reason/', form).then(function (response) {
+                        if (response.data.code === 0) {
+                            _this.transactionInfo[item].reason = response.data.arbitration_reason;
+
+                        } else {
+                            _this.transactionInfo[item].reason = '无理由';
+                        }
+                        _this.loading = false;
+                    })
+                }
             }
         }
     }

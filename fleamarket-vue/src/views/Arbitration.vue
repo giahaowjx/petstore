@@ -21,9 +21,9 @@
                     <el-col :span="22">
                         <el-table v-loading="loading" :data="transactionInfo" stripe border
                                   style="width: 100%; margin-top: 20px">
-                            <el-table-column prop="id" label="交易ID" width="180">
+                            <el-table-column prop="id" label="交易ID" width="120">
                             </el-table-column>
-                            <el-table-column prop="commodity_id" label="商品ID" width="180">
+                            <el-table-column prop="commodity_id" label="商品ID" width="120">
                             </el-table-column>
                             <el-table-column prop="user_id_sell" label="卖方用户">
                             </el-table-column>
@@ -37,7 +37,8 @@
                             </el-table-column>
                             <el-table-column align="center" label="操作">
                                 <template slot-scope="scope">
-                                    <el-button type="primary" plain size="small" @click="apply(scope.row.id, scope.row.user_id_buy)">申请仲裁</el-button>
+                                    <el-button type="primary" plain size="small" :disabled="scope.row.state !== 1"
+                                               @click="apply(scope.row.id, scope.row.user_id_buy)">申请仲裁</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
