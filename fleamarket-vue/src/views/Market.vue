@@ -128,7 +128,7 @@
         methods: {
             onFilterByClass(index) {
                 this.classIndex = index;
-                console.log(this.classIndex + 1)
+                this.getCommodityList(0)
             },
             onSearch() {
                 this.getCommodityList(0);
@@ -151,7 +151,7 @@
                 if (this.classIndex || this.classIndex === 0) {
                     form.append('commodity_type', this.classIndex + 1);
                 }
-                if (this.input !== '') {
+                if (this.input) {
                     // 进行商品搜索
                     url = '/commodity/search/';
                     form.append('keywords', this.input);
