@@ -128,7 +128,7 @@
         methods: {
             onFilterByClass(index) {
                 this.classIndex = index;
-                this.getCommodityList(0);
+                console.log(this.classIndex + 1)
             },
             onSearch() {
                 this.getCommodityList(0);
@@ -148,7 +148,7 @@
                 const _this = this;
                 let url = '';
                 let form = new FormData();
-                if (this.classIndex) {
+                if (this.classIndex || this.classIndex === 0) {
                     form.append('commodity_type', this.classIndex + 1);
                 }
                 if (this.input !== '') {
