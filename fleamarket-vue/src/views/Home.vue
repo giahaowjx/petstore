@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     onSearch() {
-      if (this.input !== "") {
+      if (this.input) {
         this.$router.push({name: 'Market', params: {searchInput: this.input}})
       }
     },

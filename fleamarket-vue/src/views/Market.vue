@@ -229,31 +229,28 @@
         created() {
             const _this = this;
             this.classIndex = this.$route.params.classIndex;
+            this.input = this.$route.params.searchInput;
             this.loading = true;
+            let url = 'commodity/market/';
+            let form = new FormData();
+
             if (this.classIndex) {
-                let form = new FormData();
                 form.append('commodity_type', this.classIndex);
-                axios.post('commodity/market/', form)
-                    .then(function (response) {
-                        _this.commodityList = response.data.commodity_list;
-                        _this.commodityTotalNum = response.data.page_num * _this.commodityPageNum;
-                        _this.commodityChosen = _this.commodityList[0];
-                        _this.loading = false;
-                }).catch(function (err) {
-                    _this.loading = false;
-                })
-            } else {
-                axios.post('commodity/market/')
-                    .then(function (response) {
-                        _this.commodityList = response.data.commodity_list;
-                        // console.log(response.data.commodity_list)
-                        _this.commodityTotalNum = response.data.page_num * _this.commodityPageNum;
-                        _this.commodityChosen = _this.commodityList[0];
-                        _this.loading = false;
-                    }).catch(function (error) {
-                        _this.loading = false;
-                })
             }
+            if (this.input) {
+                url = '/commodity/search/';
+                form.append('keywords', this.input)
+            }
+            form.append('page_max_items', this.commodityPageNum);
+            form.append('page_id', 0);
+            axios.post(url, form).then(function (response) {
+                _this.commodityList = response.data.commodity_list;
+                _this.commodityTotalNum = response.data.page_num * _this.commodityPageNum;
+                _this.loading = false;
+            }).catch(function (error) {
+                _this.$message.error(error);
+                _this.loading = false;
+            })
         }
     }
 </script>
