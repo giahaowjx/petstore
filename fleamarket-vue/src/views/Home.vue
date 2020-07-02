@@ -47,7 +47,7 @@ export default {
     },
     onFilterByClass(index) {
       console.log(index)
-      this.$router.push({name: 'Market', params:  {classIndex: index}});
+      this.$router.push({name: 'Market', params:  {classIndex: index + 1}});
     }
   }
 }
